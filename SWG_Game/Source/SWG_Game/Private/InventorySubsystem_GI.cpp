@@ -3,3 +3,12 @@
 
 #include "InventorySubsystem_GI.h"
 
+void UInventorySubsystem_GI::Initialize(FSubsystemCollectionBase& Collection)
+{
+
+}
+
+void UInventorySubsystem_GI::Deinitialize()
+{
+
+}
