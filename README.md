@@ -12,7 +12,7 @@ A game created as a contender in the Ostravsky Game Jam 2025.
 - Nela Březinová - 2D artist
 - Mariana Bartečková - 2D artist
 
-We're a team of mostly university students passionate about game development and some of us are repeating contenders from last year.
+We're a team of mostly university students passionate about game development, some of us are repeating contenders from last year.
 
 ## Main idea
 - You're located in another reality (hence the player look - tornado instead of legs, no joints)
