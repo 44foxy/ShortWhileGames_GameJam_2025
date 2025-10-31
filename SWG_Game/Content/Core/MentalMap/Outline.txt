@@ -1,0 +1,69 @@
+┌────────────────────────────────────────────────────────┐
+│                    WORLD  (Kernel)                     │
+│  - Spawns actors, initializes contexts                 │
+│  - Provides runtime space for relations                │
+│  - Emits global events (BeginPlay, Overlap, etc.)      │
+│  - Hosts optional Subsystems (dimension mgr, inventory)│
+└────────────────────────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│                ACTORS  (Network Switches)              │
+│  - Create and route relations between components        │
+│  - Maintain InternalRelationBuffer[]                    │
+│      { Target, ActionEnum, BoundRefs, Timestamp }       │
+│  - Handshake logic (inverted TCP):                     │
+│      "You know my interface → send me what to modify." │
+│  - No heavy tick; purely event-driven.                 │
+└────────────────────────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│           COMPONENTS  (Logic Transformers)              │
+│  - Receive or offer variable references                │
+│  - Apply logic directly (no data copies)               │
+│  - Operate in two modes:                               │
+│     • Continuous  → thread-pool continuous tasks       │
+│     • Periodic    → internal scheduler impulses        │
+│  - Self-contained event-driven tick;                   │
+│    uses thread pool only when needed.                  │
+└────────────────────────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│          THREAD POOL  (Compute Fabric)                 │
+│  - Worker threads for continuous or periodic logic     │
+│  - Components register/unregister tasks dynamically    │
+│  - Internal timer manager replaces scattered checks    │
+│  - Handles CPU parallelism cleanly                     │
+└────────────────────────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│            INTERFACES  (Language Layer)                │
+│  - Define communication contracts (enums, actions)     │
+│  - Bind actors/components via reflection or Blueprint  │
+│  - Act as data "protocols" for connection logic        │
+└────────────────────────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│            RELATION TABLES  (Local Buffers)            │
+│  - Exist per Actor                                    │
+│  - Each entry = active relation (pointer set)         │
+│  - Lifetime tied to actors/components; GC-safe        │
+│  - No global registry required                        │
+└────────────────────────────────────────────────────────┘
+                     │
+                     ▼
+┌────────────────────────────────────────────────────────┐
+│          VIRTUAL LAYERS  (Dimensional Overlays)        │
+│  - Optional “dimensions” activated by conditionals     │
+│  - Examples:                                           │
+│     • Debug Visualization → draws connection lines     │
+│     • Analytics → logs relation creation/destruction   │
+│     • Network Replication → syncs relation metadata    │
+│     • AI Observation → interprets relation signals     │
+│  - Cost = zero when inactive (simple `if(LayerActive)`)│
+└────────────────────────────────────────────────────────┘
+
